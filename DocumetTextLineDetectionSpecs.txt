@@ -1,0 +1,90 @@
+          Project: Document text-line detection and reading direction 
+														using Projection Profiles
+
+	Abstract:  
+One major task in the document image analysis is to decompose a given document into
+a hierarchical tree structures where the root is the whole document (could be one page
+or multiple pages); the next level under a page are one or more column blocks, we called
+blocks as “zones” hereafter; each column zone could consists of text zones and other 
+none-text zones (such as figures, graphic, table, math equations, ...); the next level 
+under text-zones are paragraphs; below paragraphs are text-lines; below text-lines are 
+text-words; below text-words are characters. An Optical Character Recognition (OCR) 
+system begins it document recognition from bottom up of the document hierarchical tree; 
+it first does character recognition, up to form words, up to form text-lines, and so for.
+A highly effective technique for document image decomposition is using the projection 
+profiles of a given document to construct the document hierarchy top-down. 
+
+The Projection Profiles (also called a Signature Analysis of a Binary Image) is 
+a Projection (summing up) object (none-zero) pixels within a given “text-zone” within the
+image, taking on a given direction i.e. vertical or horizontal, therefore are called 
+Horizontal Projection Profile (HPP) and Vertical Projection Profile (VPP). 
+
+The HPP and VPP can also be used to determine the reading direction of a given document, 
+by analyzing the patterns of HPP and VPP.
+
+In this project, you are only to determine the bounding boxes of text-lines within the 
+given text-zone and to determine the reading direction of the document.
+
+
+What you need to do for this project: 
+
+0) Given a binary document image (with image header) consists only a text-zone.
+1) Dynamically allocate all needed arrays of appropriate size
+2) Compute the HPP and the VPP from the input image. 		
+3) Output the HPP and the VPP to outFile2 with proper captions.
+4) Threshold both HPP and VPP, try ThrValue >= 3, to obtain binary, called HPPBinary
+		and VPPBinary.
+5) Output the HPPBinary and VPPBinary to outFile2 with proper captions.
+6) Apply 1D morphological closing operation on both HPPBinary and VPPBinary, begin at
+	1, with 1D structuring element: 111 origin at the center.
+	Call the results HPPMorph and VPPMorph
+7) Using HPPMorph and VPPMorph to determine the reading direction of the document image.
+	There are a few methods to do so; a simple run-counting method is given below:
+	(a run is a sequence of consecutive pixels with the same value.)
+	
+	step 1: Compute the number of runs in HPPMorph
+ 					Compute the number of runs in VPPMorph
+	step 2: if HPPruns >= factor * VPPruns // try factor == 3 
+			  			return horizontal
+		  		else if VPPruns >= factor * HPPruns  
+			 				return vertical
+		  		else write an error message to the console: 
+							“Can not determine the reading direction”
+							and exit the program
+
+8) Output the reading direction to outFile2 with proper caption.
+
+9) Base on the reading direction, you are to compute the text-line bounding boxes using either
+HPPMorph (if reading is horizontal) or VPPMorph (if reading is vertical).  Recalled – A bounding
+box is represented by two points of four integers (minRow, minCol) and (maxRow, maxCol).
+
+10) Ideally, a document hierarchical linked list structure should be used to store the extracted
+bounding boxes in the matter of document decomposition hierarchy; however, to make the project easier,
+instead of constructing a tree hierarchy, you only need to use a queue to store the computed bounding boxes.
+
+11) Draw the text-line bounding box onto the image array.
+
+12) Pretty print the image array with bounding box overlaid to OutFile1.
+
+13) Print to OutFile2 the Queue from front to back using the format as follows.  			
+			box type // box type here is 3 for text-line
+			minRow minCol maxRow 	maxCol
+			box type // box type here is 3 for text-line
+			minRow minCol maxRow 	maxCol
+			box type // box type here is 3 for text-line
+			minRow minCol maxRow 	maxCol
+			:
+			:
+
+ 12) You will be given two data files, run your program on each file. Print both results in your hard copies.
+
+
+
+I. Input:
+	- imageFile (args[0] / argv[1]): a binary image
+	- threshold (args[1] / argv[2]): a threshold value, try 3
+
+II. Output:
+	- boxedTextLine (args[2] / argv[3]): a text-line bouding box overlaid on the input image
+	- debuging (args[3] / argv[4]): all other output ad given in the above
+
